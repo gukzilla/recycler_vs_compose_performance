@@ -4,7 +4,7 @@ import com.example.recyclervscompose.recyclerview.Entry
 
 object Repository {
 
-    val entries = List(1000) {
+    val entries = List(100000) {
         Entry("Item $it")
     }
 }

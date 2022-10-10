@@ -1,7 +1,6 @@
 package com.example.benchmark
 
 import android.content.Intent
-import androidx.benchmark.macro.CompilationMode
 import androidx.benchmark.macro.StartupMode
 import androidx.benchmark.macro.StartupTimingMetric
 import androidx.benchmark.macro.junit4.MacrobenchmarkRule
@@ -22,8 +21,10 @@ import org.junit.runner.RunWith
  * Run this benchmark from Studio to see startup measurements, and captured system traces
  * for investigating your app's performance.
  */
+private const val ITERATIONS = 5
+
 @RunWith(AndroidJUnit4::class)
-class ExampleStartupBenchmark {
+class StartupBenchmark {
     @get:Rule
     val benchmarkRule = MacrobenchmarkRule()
 
@@ -31,31 +32,26 @@ class ExampleStartupBenchmark {
     fun startupRecyclerActivity() = benchmarkRule.measureRepeated(
         packageName = "com.example.recyclervscompose",
         metrics = listOf(StartupTimingMetric()),
-        iterations = 5,
-        startupMode = StartupMode.WARM,
-        setupBlock = {
-            // Before starting to measure, navigate to the UI to be measured
-            val intent = Intent("$packageName.RECYCLER_VIEW_ACTIVITY")
-            startActivityAndWait(intent)
-        }
+        iterations = ITERATIONS,
+        startupMode = StartupMode.COLD
     ) {
-        pressHome()
-        startActivityAndWait()
+        pressHome(delayDurationMs = 1000)
+        val intent = Intent("$packageName.RECYCLER_VIEW_ACTIVITY")
+        startActivityAndWait(intent)
     }
 
     @Test
     fun startupComposeActivity() = benchmarkRule.measureRepeated(
         packageName = "com.example.recyclervscompose",
         metrics = listOf(StartupTimingMetric()),
-        iterations = 5,
-        startupMode = StartupMode.WARM,
+        iterations = ITERATIONS,
+        startupMode = StartupMode.COLD,
         setupBlock = {
             // Before starting to measure, navigate to the UI to be measured
-            val intent = Intent("$packageName.COMPOSE_ACTIVITY")
-            startActivityAndWait(intent)
         }
     ) {
-        pressHome()
-        startActivityAndWait()
+        pressHome(delayDurationMs = 1000)
+        val intent = Intent("$packageName.COMPOSE_ACTIVITY")
+        startActivityAndWait(intent)
     }
 }

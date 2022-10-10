@@ -29,10 +29,8 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-
-const val TARGET_PACKAGE = "com.example.recyclervscompose"
 private const val ITERATIONS = 5
-private const val SCROLL_DOWN = 5
+private const val SCROLL_DOWN = 10
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
@@ -42,68 +40,64 @@ class FrameTimingBenchmark {
 
     // [START macrobenchmark_control_your_app]
     @Test
-    fun scrollRecyclerView() {
-        benchmarkRule.measureRepeated(
-            // [START_EXCLUDE]
-            packageName = TARGET_PACKAGE,
-            metrics = listOf(FrameTimingMetric()),
-            // Try switching to different compilation modes to see the effect
-            // it has on frame timing metrics.
-            compilationMode = CompilationMode.None(),
-            startupMode = StartupMode.WARM, // restarts activity each iteration
-            iterations = ITERATIONS,
-            // [END_EXCLUDE]
-            setupBlock = {
-                // Before starting to measure, navigate to the UI to be measured
-                val intent = Intent("$packageName.RECYCLER_VIEW_ACTIVITY")
-                startActivityAndWait(intent)
-            }
-        ) {
-            val recycler = device.findObject(By.res(packageName, "recycler"))
-            // Set gesture margin to avoid triggering gesture navigation
-            // with input events from automation.
-            recycler.setGestureMargin(device.displayWidth / 5)
-
-            // Scroll down several times
-            repeat(SCROLL_DOWN) { recycler.fling(Direction.DOWN) }
+    fun scrollRecyclerView() = benchmarkRule.measureRepeated(
+        // [START_EXCLUDE]
+        packageName = "com.example.recyclervscompose",
+        metrics = listOf(FrameTimingMetric()),
+        // Try switching to different compilation modes to see the effect
+        // it has on frame timing metrics.
+        compilationMode = CompilationMode.None(),
+        startupMode = StartupMode.WARM, // restarts activity each iteration
+        iterations = ITERATIONS,
+        // [END_EXCLUDE]
+        setupBlock = {
+            // Before starting to measure, navigate to the UI to be measured
+            val intent = Intent("$packageName.RECYCLER_VIEW_ACTIVITY")
+            startActivityAndWait(intent)
         }
+    ) {
+        val recycler = device.findObject(By.res(packageName, "recycler"))
+        // Set gesture margin to avoid triggering gesture navigation
+        // with input events from automation.
+        recycler.setGestureMargin(device.displayWidth / 5)
+
+        // Scroll down several times
+        repeat(SCROLL_DOWN) { recycler.fling(Direction.DOWN) }
     }
     // [END macrobenchmark_control_your_app]
 
     @Test
-    fun scrollComposeList() {
-        benchmarkRule.measureRepeated(
-            // [START_EXCLUDE]
-            packageName = TARGET_PACKAGE,
-            metrics = listOf(FrameTimingMetric()),
-            // Try switching to different compilation modes to see the effect
-            // it has on frame timing metrics.
-            compilationMode = CompilationMode.None(),
-            startupMode = StartupMode.WARM, // restarts activity each iteration
-            iterations = ITERATIONS,
-            // [END_EXCLUDE]
-            setupBlock = {
-                // Before starting to measure, navigate to the UI to be measured
-                val intent = Intent("$packageName.COMPOSE_ACTIVITY")
-                startActivityAndWait(intent)
-            }
-        ) {
-            /**
-             * Compose does not have view IDs so we cannot directly access composables from UiAutomator.
-             * To access a composable we need to set:
-             * 1) Modifier.semantics { testTagsAsResourceId = true } once, high in the compose hierarchy
-             * 2) Add Modifier.testTag("someIdentifier") to all of the composables you want to access
-             *
-             * Once done that, we can access the composable using By.res("someIdentifier")
-             */
-            val column = device.findObject(By.res("myLazyColumn"))
-
-            // Set gesture margin to avoid triggering gesture navigation
-            // with input events from automation.
-            column.setGestureMargin(device.displayWidth / 5)
-
-            // Scroll down several times
-            repeat(SCROLL_DOWN) { column.fling(Direction.DOWN) }
+    fun scrollComposeList() = benchmarkRule.measureRepeated(
+        // [START_EXCLUDE]
+        packageName = "com.example.recyclervscompose",
+        metrics = listOf(FrameTimingMetric()),
+        // Try switching to different compilation modes to see the effect
+        // it has on frame timing metrics.
+        compilationMode = CompilationMode.None(),
+        startupMode = StartupMode.WARM, // restarts activity each iteration
+        iterations = ITERATIONS,
+        // [END_EXCLUDE]
+        setupBlock = {
+            // Before starting to measure, navigate to the UI to be measured
+            val intent = Intent("$packageName.COMPOSE_ACTIVITY")
+            startActivityAndWait(intent)
         }
+    ) {
+        /**
+         * Compose does not have view IDs so we cannot directly access composables from UiAutomator.
+         * To access a composable we need to set:
+         * 1) Modifier.semantics { testTagsAsResourceId = true } once, high in the compose hierarchy
+         * 2) Add Modifier.testTag("someIdentifier") to all of the composables you want to access
+         *
+         * Once done that, we can access the composable using By.res("someIdentifier")
+         */
+        val column = device.findObject(By.res("myLazyColumn"))
+
+        // Set gesture margin to avoid triggering gesture navigation
+        // with input events from automation.
+        column.setGestureMargin(device.displayWidth / 5)
+
+        // Scroll down several times
+        repeat(SCROLL_DOWN) { column.fling(Direction.DOWN) }
     }
 }
