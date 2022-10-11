@@ -45,10 +45,7 @@ class StartupBenchmark {
         packageName = "com.example.recyclervscompose",
         metrics = listOf(StartupTimingMetric()),
         iterations = ITERATIONS,
-        startupMode = StartupMode.COLD,
-        setupBlock = {
-            // Before starting to measure, navigate to the UI to be measured
-        }
+        startupMode = StartupMode.COLD
     ) {
         pressHome(delayDurationMs = 1000)
         val intent = Intent("$packageName.COMPOSE_ACTIVITY")
